@@ -12,7 +12,7 @@ public class RestController(IRecipientService recipientService) : ControllerBase
 {
     // GET: api/<RestController>
     [HttpGet("recipient")]
-    public async Task<IActionResult> Get()
+    public async Task<ActionResult<List<Recipient>>> Get()
     {
         var result = await recipientService.GetRecipientsAsync(cancellationToken: default);
         return Ok(result);

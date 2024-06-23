@@ -15,6 +15,8 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
+export const BASE_API_URL = "http://localhost:5101";
+
 @Injectable()
 export class GeneratedService {
     private http: HttpClient;
@@ -23,13 +25,13 @@ export class GeneratedService {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "";
+        this.baseUrl = baseUrl ?? BASE_API_URL;
     }
 
     /**
      * @return Success
      */
-    recipient(): Observable<void> {
+    recipient(): Observable<Recipient[]> {
         let url_ = this.baseUrl + "/api/rest/recipient";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -37,6 +39,7 @@ export class GeneratedService {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "text/plain"
             })
         };
 
@@ -47,14 +50,14 @@ export class GeneratedService {
                 try {
                     return this.processRecipient(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<Recipient[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<Recipient[]>;
         }));
     }
 
-    protected processRecipient(response: HttpResponseBase): Observable<void> {
+    protected processRecipient(response: HttpResponseBase): Observable<Recipient[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -63,7 +66,17 @@ export class GeneratedService {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Recipient.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -72,6 +85,46 @@ export class GeneratedService {
         }
         return _observableOf(null as any);
     }
+}
+
+export class Recipient implements IRecipient {
+    id?: number;
+    userName?: string | undefined;
+
+    constructor(data?: IRecipient) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+        }
+    }
+
+    static fromJS(data: any): Recipient {
+        data = typeof data === 'object' ? data : {};
+        let result = new Recipient();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        return data;
+    }
+}
+
+export interface IRecipient {
+    id?: number;
+    userName?: string | undefined;
 }
 
 export class ApiException extends Error {

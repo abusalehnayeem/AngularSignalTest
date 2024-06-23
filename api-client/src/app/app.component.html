@@ -6,12 +6,11 @@
 
     <!-- Name input -->
     <div class="mb-3">
-      <label class="form-label" for="recipient">Name</label>
-      <select class="form-select" name="recipient" id="recipient" title="Select a name" [(ngModel)] = "contactFormDto.name">
-        <option selected>Open this select menu</option>
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
+      <label class="form-label" for="name">Name</label>
+      <select class="form-select" name="id" id="id" title="Select a name" [(ngModel)]="contactFormDto.id">
+        <option *ngFor="let recipientObject of contactRecipients()" [value]="recipientObject.id">
+          {{recipientObject.userName}}
+        </option>
       </select>
     </div>
 

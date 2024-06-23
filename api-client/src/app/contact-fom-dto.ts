@@ -1,5 +1,10 @@
 export interface ContactFormDto {
-  name: string;
+  id: number | undefined;
   email: string;
   message: string;
+}
+
+export interface Recipient {
+  id: number;
+  name: string;
 }
