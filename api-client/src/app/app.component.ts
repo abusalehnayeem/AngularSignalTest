@@ -1,11 +1,11 @@
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { GeneratedService } from './generated-api.service';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ContactFormDto, Recipient } from './contact-fom-dto';
 import { HttpClientModule } from '@angular/common/http';
-import { Observable, catchError, map, of, tap } from 'rxjs';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Observable, catchError, map, of } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 
 @Component({
